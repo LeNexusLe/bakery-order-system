@@ -1,30 +1,47 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ClientDashboard from "./pages/ClientDashboard.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
+import Layout from "./components/Layout.jsx";
 
 function Home() {
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Bakery Order System</h1>
-      <p>Hello.</p>
+    <div className="space-y-2">
+      <h1 className="text-3xl font-bold tracking-tight">Bakery Order System</h1>
+      <p className="text-slate-600">Hello.</p>
     </div>
   );
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <nav style={{ padding: 16, display: "flex", gap: 12 }}>
-        <Link to="/">Home</Link>
-        <Link to="/client">Panel klienta</Link>
-        <Link to="/admin">Panel admina</Link>
-      </nav>
-
+    <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/client" element={<ClientDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth role="ADMIN">
+              <AdminDashboard />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/client"
+          element={
+            <RequireAuth role="CLIENT">
+              <ClientDashboard />
+            </RequireAuth>
+          }
+        />
       </Routes>
-    </BrowserRouter>
+    </Layout>
   );
 }
