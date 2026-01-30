@@ -1,3 +1,5 @@
+import ProfileCard from "../components/ProfileCard";
+
 export default function AdminDashboard() {
   return (
     <div className="space-y-4">
@@ -24,6 +26,8 @@ export default function AdminDashboard() {
           <div className="mt-1 text-sm text-slate-600">Statusy i realizacja.</div>
         </div>
       </div>
+
+      <ProfileCard />
     </div>
   );
 }
