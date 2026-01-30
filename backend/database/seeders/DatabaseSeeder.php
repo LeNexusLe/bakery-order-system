@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@bakery.local'],
             [
                 'name' => 'Admin',
+                'last_name' => 'Main',
                 'password' => Hash::make('Password'),
+                'phone' => '123456789',
                 'role' => 'ADMIN',
             ]
 
@@ -26,7 +28,9 @@ class DatabaseSeeder extends Seeder
             ['email' => 'client@bakery.local'],
             [
                 'name' => 'Client',
+                'last_name' => 'Main',
                 'password' => Hash::make('client12345'),
+                'phone' => '123456789',
                 'role' => 'CLIENT',
             ]
         );

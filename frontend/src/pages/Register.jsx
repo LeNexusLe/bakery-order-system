@@ -1,22 +1,74 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 
+function isValidEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function isValidPhone(v) {
+  return /^[0-9+\-\s()]{6,30}$/.test(v);
+}
+
+function hasDigit(v) {
+  return /\d/.test(v);
+}
+
 export default function Register() {
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const clientError = useMemo(() => {
+    const n = name.trim();
+    const ln = lastName.trim();
+    const e = email.trim();
+    const p = phone.trim();
+
+    if (!n) return "Podaj imię.";
+    if (!ln) return "Podaj nazwisko.";
+    if (!e) return "Podaj email.";
+    if (!isValidEmail(e)) return "Podaj poprawny email.";
+    if (!p) return "Podaj numer telefonu.";
+    if (!isValidPhone(p)) return "Podaj poprawny numer telefonu.";
+
+    if (!password) return "Podaj hasło.";
+    if (password.length < 8) return "Hasło musi mieć minimum 8 znaków.";
+    if (!hasDigit(password)) return "Hasło musi zawierać przynajmniej jedną cyfrę.";
+    if (!confirmPassword) return "Powtórz hasło.";
+    if (password !== confirmPassword) return "Hasła nie są takie same.";
+
+    return null;
+  }, [name, lastName, email, phone, password, confirmPassword]);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setErr(null);
+
+    if (clientError) {
+      setErr(clientError);
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/register", { name, email, password });
+      const res = await api.post("/auth/register", {
+        name: name.trim(),
+        last_name: lastName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        password,
+      });
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
       navigate("/client");
@@ -28,7 +80,9 @@ export default function Register() {
         if (errors) {
           const firstMsg =
             errors.name?.[0] ||
+            errors.last_name?.[0] ||
             errors.email?.[0] ||
+            errors.phone?.[0] ||
             errors.password?.[0] ||
             "Niepoprawne dane.";
           setErr(firstMsg);
@@ -47,9 +101,7 @@ export default function Register() {
     <div className="mx-auto w-full max-w-md">
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
         <h1 className="text-xl font-semibold tracking-tight">Rejestracja</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Utwórz konto klienta.
-        </p>
+        <p className="mt-1 text-sm text-slate-600">Utwórz konto klienta.</p>
 
         <form onSubmit={onSubmit} className="mt-5 space-y-4">
           <div>
@@ -59,7 +111,18 @@ export default function Register() {
               placeholder="Twoje imię"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
+              autoComplete="given-name"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-slate-700">Nazwisko</label>
+            <input
+              className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+              placeholder="Twoje nazwisko"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              autoComplete="family-name"
             />
           </div>
 
@@ -71,6 +134,19 @@ export default function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              inputMode="email"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-slate-700">Telefon</label>
+            <input
+              className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+              placeholder="np. +48 600 111 222"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+              inputMode="tel"
             />
           </div>
 
@@ -78,10 +154,22 @@ export default function Register() {
             <label className="text-sm text-slate-700">Hasło</label>
             <input
               className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
-              placeholder="minimum 8 znaków"
+              placeholder="min 8 znaków i 1 cyfra"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-slate-700">Powtórz hasło</label>
+            <input
+              className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-slate-200"
+              placeholder="powtórz hasło"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
             />
           </div>

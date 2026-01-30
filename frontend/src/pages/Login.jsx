@@ -11,19 +11,20 @@ export default function Login() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
+
     setErr(null);
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", {email: email.trim(), password,});
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
 
       navigate(res.data.user.role === "ADMIN" ? "/admin" : "/client");
     } catch (e2) {
-      const status = e2?.response?.status;
-      if (status === 401) setErr("Błędny email lub hasło");
-      else setErr("Coś poszło nie tak. Spróbuj ponownie.");
+      setErr("Niepoprawny email lub hasło.");
     } finally {
       setLoading(false);
     }
@@ -37,7 +38,7 @@ export default function Login() {
           Zaloguj się, aby przejść do panelu.
         </p>
 
-        <form onSubmit={onSubmit} className="mt-5 space-y-4">
+        <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
           <div>
             <label className="text-sm text-slate-700">Email</label>
             <input
@@ -46,6 +47,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              inputMode="email"
             />
           </div>
 
@@ -62,7 +64,11 @@ export default function Login() {
           </div>
 
           {err && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div
+              className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+              role="alert"
+              aria-live="polite"
+            >
               {err}
             </div>
           )}

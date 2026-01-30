@@ -1,3 +1,5 @@
+import ProfileCard from "../components/ProfileCard";
+
 export default function ClientDashboard() {
   return (
     <div className="space-y-4">
@@ -14,10 +16,7 @@ export default function ClientDashboard() {
           <div className="mt-1 text-sm text-slate-600">Lista zamówień klienta.</div>
         </div>
 
-        <div className="rounded-2xl border bg-white p-5 shadow-sm">
-          <div className="text-sm font-medium">Profil</div>
-          <div className="mt-1 text-sm text-slate-600">Edycja danych i hasła.</div>
-        </div>
+        <ProfileCard />
       </div>
     </div>
   );
