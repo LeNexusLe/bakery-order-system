@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ProductController;
 
 
 Route::apiResource('users', UserController::class);
@@ -19,3 +20,5 @@ Route::middleware('auth:api')->prefix('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::patch('me', [AuthController::class, 'updateMe']);
 });
+
+Route::get('products', [ProductController::class, 'index']);

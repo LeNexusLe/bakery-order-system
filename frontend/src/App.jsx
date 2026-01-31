@@ -5,6 +5,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import Layout from "./components/Layout.jsx";
+import Products from "./pages/Products.jsx";
 
 function Home() {
   return (
@@ -20,7 +21,8 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-
+        
+        <Route path="/products" element={<Products />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
